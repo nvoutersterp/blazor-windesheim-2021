@@ -1,6 +1,18 @@
 ﻿@page "/"
 @using DemoProject.Models
 
+
+<Autocompleter Data="Products">
+    <ItemTemplate>
+         <li class="@(context.IsHighlighted ? "highlight" : "")">@context.Item.Description kost @context.Item.Price</li>
+    </ItemTemplate>
+</Autocompleter>
+
+
+
+
+
+
 Hallo!
 
 <input @bind-value="naam" @bind-value:event="oninput">

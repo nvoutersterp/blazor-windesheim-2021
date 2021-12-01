@@ -1,1 +1,19 @@
-﻿
+﻿@typeparam T
+
+
+<div @ref="MijnElement"></div>
+
+<input @bind-value="Query" @bind-value:event="oninput" @onkeyup="HandleKeyUp">
+@if (Suggestions == null || Suggestions.Count == 0)
+{
+    <p>Nog geen suggesties</p>
+}
+else
+{
+    <ul>
+        @foreach (var suggestion in Suggestions)
+        {
+            @ItemTemplate(suggestion)
+        }
+    </ul>
+}

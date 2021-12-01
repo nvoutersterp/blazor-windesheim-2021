@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,17 @@ namespace DemoProject.Shared
 {
 	public partial class Autocompleter<T> : ComponentBase
 	{
-
+		[Parameter]
 		public List<T> Data { get; set; }
 
 		public string Query { get; set; }
 
 		public List<AutocompleterItem> Suggestions { get; set; }
+
+		public ElementReference MijnElement { get; set; }
+
+		[Parameter]
+		public RenderFragment<AutocompleterItem> ItemTemplate { get; set; }
 
 		public void Autocomplete()
 		{
@@ -53,6 +59,18 @@ namespace DemoProject.Shared
 			}
 
 			Suggestions.First().IsHighlighted = true;
+		}
+
+		public void HandleKeyUp(KeyboardEventArgs args)
+		{
+			if (args.Key == "ArrowDown")
+			{
+				Next();
+			}
+			else
+			{
+				Autocomplete();
+			}
 		}
 
 		public class AutocompleterItem

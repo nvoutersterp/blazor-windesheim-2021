@@ -1,5 +1,7 @@
+using Bunit;
 using DemoProject.Shared;
 using DemoProject.Tests.Models;
+using Microsoft.AspNetCore.Components.Web;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +11,18 @@ namespace DemoProject.Tests
 	public class AutocompleterTests
 	{
 		List<Car> cars;
+		IRenderedComponent<Autocompleter<Car>> fixture;
 		Autocompleter<Car> sut;
 
 		[SetUp]
 		public void Setup()
 		{
-			sut = new Autocompleter<Car>(); // system under test
+			var ctx = new Bunit.TestContext();
+			fixture = ctx.RenderComponent<Autocompleter<Car>>(parameters =>
+			{
+				parameters.Add(x => x.ItemTemplate, autocompleterItem => $"<li>{autocompleterItem.Item.Make} {autocompleterItem.Item.Model}</li>");
+			});
+			sut = fixture.Instance; // system under test
 			cars = new List<Car>
 			{
 				new Car { Make = "BMW", Model ="e46"},
@@ -118,6 +126,38 @@ namespace DemoProject.Tests
 
 			Assert.AreEqual(true, sut.Suggestions.First().IsHighlighted);
 			Assert.AreEqual(1, sut.Suggestions.Count(x => x.IsHighlighted));
+		}
+
+		[Test]
+		public void Autocomplete_BasicQuery_RenderCars()
+        {
+			sut.Data = cars;
+			sut.Query = "e";
+			sut.Autocomplete();
+			fixture.Render();
+
+			Assert.AreEqual("BMW e46", fixture.Find("li").TextContent);
+        }
+
+		[Test]
+		public void HandleKeyUp_Letter_ShouldAutocomplete()
+		{
+			sut.Data = cars;
+			sut.Query = "e";
+			sut.HandleKeyUp(new KeyboardEventArgs { Key = "o" });
+
+			Assert.NotNull(sut.Suggestions);
+		}
+
+		[Test]
+		public void HandleKeyUp_ArrowKey_ShouldNext()
+		{
+			sut.Data = cars;
+			sut.Query = "e";
+			sut.Autocomplete();
+			sut.HandleKeyUp(new KeyboardEventArgs { Key = "ArrowDown" });
+
+			Assert.True(sut.Suggestions.First().IsHighlighted);
 		}
 	}
 }
