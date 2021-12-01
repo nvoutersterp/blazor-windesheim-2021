@@ -1,0 +1,32 @@
+﻿@page "/"
+@using DemoProject.Models
+
+Hallo!
+
+<input @bind-value="naam" @bind-value:event="oninput">
+
+Naam: @naam
+
+<button @onclick="ChangeName">Verander naam</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Product</th>
+            <th>Prijs</th>
+            <th>Foto</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Products)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Description</td>
+                <td>&euro; @product.Price</td>
+                <td><img src="@product.PhotoUrl"></td>
+            </tr>
+        }
+    </tbody>
+</table>
